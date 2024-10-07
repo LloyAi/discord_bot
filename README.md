@@ -1,6 +1,5 @@
-Here’s the updated `README.md` file with all the `pip` installs included:
-
----
+## License
+This project is licensed under the GNU General Public License v3.0.  See the `LICENSE` file for details.
 
 # Discord AI Bot
 
@@ -49,10 +48,5 @@ Make sure you have Python installed (preferably version 3.8+).
 
 If you encounter any issues or have questions, please open an issue and reach out to Vishal Romel Charran.
 
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
----
 
 This version includes all the dependencies and an updated `.env` configuration based on the imports you've shared. Let me know if you need any other adjustments!

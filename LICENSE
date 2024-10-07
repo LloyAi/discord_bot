@@ -1,0 +1,33 @@
+GNU GENERAL PUBLIC LICENSE
+Version 3, 29 June 2007
+
+Copyright (C) 2024 Typy, Inc. <https://www.typy.site/>
+Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
+
+0. This License applies to any program or other work which contains a notice placed by you (the “copyright holder”) saying it can be distributed under the terms of this General Public License. The “Program”, below, refers to any such program or work, and a “work based on the Program” means either the Program or any derivative work under copyright law: that is to say, a work containing the Program or a portion of it, either verbatim or with modifications.
+
+1. You may copy and distribute verbatim copies of the Program's source code as you receive it, in any medium, provided that you conspicuously and appropriately publish on each copy an appropriate copyright notice; and there is no need to pay any fees for the Program.
+
+2. You may modify your copy or copies of the Program or any portion of it, and copy and distribute such modifications under the terms of Section 1 above, provided that you also meet all of these conditions:
+
+    a) You must cause the modified files to carry prominent notices stating that you changed the files and the date of any change.
+
+    b) You must cause the whole of the work to be licensed at no charge to all third parties under the terms of this License.
+
+3. You are not allowed to impose any further restrictions on the exercise of the rights granted or affirmed under this License.
+
+4. The GPL does not guarantee that the Program will be useful or functional, and it is provided “as-is”, without warranty of any kind.
+
+5. If you wish to distribute copies of the Program or your modified version, you must also pass on the same freedoms to the recipients. That means you must distribute the source code or make it available.
+
+6. You must keep intact all notices stating that the Program is licensed under this License.
+
+7. The GPL is governed by the law of the state of your principal place of business.
+
+8. If any part of this License is held to be invalid, that will not affect the validity of the rest of the License.
+
+9. You may not use the name of Typy, Inc. to promote or advertise any derivative works based on the Program without written permission.
+
+10. This License is intended to make software free to use and modify, thus promoting collaboration and improvement.
+
+For more details, see <https://www.gnu.org/licenses/>.
