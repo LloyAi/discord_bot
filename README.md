@@ -50,3 +50,7 @@ If you encounter any issues or have questions, please open an issue and reach ou
 
 
 This version includes all the dependencies and an updated `.env` configuration based on the imports you've shared. Let me know if you need any other adjustments!
+
+## Steps to create a pull request
+
+
