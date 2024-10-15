@@ -1,0 +1,14 @@
+name: 'Check CLA'
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  check_cla:
+    runs-on: ubuntu-latest
+    steps:
+      - name: CLA Assistant GitHub Action
+        uses: cla-assistant/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cla-url: 'https://github.com/LloyAi/discord_bot/blob/main/CLA.md'
