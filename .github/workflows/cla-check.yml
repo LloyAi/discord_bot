@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: CLA Assistant GitHub Action
-        uses: cla-assistant/github-action@v2
+        uses: contributor-assistant/github-action@v2.3.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cla-url: 'https://gist.github.com/LloyAi/9dc9ac3286e8d823e7e7279510b00aca'
