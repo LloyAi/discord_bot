@@ -1,7 +1,7 @@
 name: 'Check CLA'
 on:
   pull_request:
-    types: [opened]
+    types:  [opened, reopened, synchronize]
 
 jobs:
   check_cla:
