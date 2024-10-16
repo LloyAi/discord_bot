@@ -11,4 +11,4 @@ jobs:
         uses: cla-assistant/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          cla-url: 'https://github.com/LloyAi/discord_bot/blob/main/CLA.md'
+          cla-url: 'https://gist.github.com/VestedKhalid/058d2cc469eed095f98bf83d9baf63f1'
