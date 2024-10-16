@@ -1,5 +1,7 @@
 [![CLA Assistant](https://cla-assistant.io/readme/badge/LloyAi/discord_bot)](https://cla-assistant.io/LloyAi/discord_bot)
 
+test 
+
 ## License
 This project is licensed under the GNU General Public License v3.0.  See the `LICENSE` file for details.
 
