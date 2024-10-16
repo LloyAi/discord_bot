@@ -1,5 +1,4 @@
 [![CLA Assistant](https://cla-assistant.io/readme/badge/LloyAi/discord_bot)](https://cla-assistant.io/LloyAi/discord_bot)
-[![CLA assistant](https://cla-assistant.io/readme/badge/VestedKhalid/discord_bot)](https://cla-assistant.io/VestedKhalid/discord_bot)
 
 ## License
 This project is licensed under the GNU General Public License v3.0.  See the `LICENSE` file for details.
