@@ -189,7 +189,7 @@ async def command_extract_equations(interaction: discord.Interaction):
             equations_data = json.load(f)
 
         # Format and send the results
-        equations_message = f"Extracted LaTeX Equations:\n{equations_data['equations']}"
+        equations_message = f"Extracted LaTeX Equations:\n{equations_data}"
         await interaction.followup.send(equations_message, ephemeral=True)
     
     except Exception as e:
