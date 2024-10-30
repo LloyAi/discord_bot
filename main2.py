@@ -175,25 +175,40 @@ async def command_done(interaction: discord.Interaction):
     await interaction.response.send_message("Indexing Files...\nWe will send a message when your context is ready.", ephemeral=True)  # Send initial response
     await done(interaction)  # Run the main function
 
+from Discord_Googledrive2 import user_folders
+
+
 @client.tree.command(name="extract_equations", description="Extract LaTeX equations from PDF")
 async def command_extract_equations(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)  # Defer the interaction
-    try:
-        # Call your script's main function here
-        await interaction.followup.send("Extracting equations from PDF...")
-
-        os.system('python3 extract_equations.py')
-
-        # After the script runs, send the results
-        with open("equations_output.json", "r") as f:
-            equations_data = json.load(f)
-
-        # Format and send the results
-        equations_message = f"Extracted LaTeX Equations:\n{equations_data}"
-        await interaction.followup.send(equations_message, ephemeral=True)
     
-    except Exception as e:
-        await interaction.followup.send(f"An error occurred: {e}", ephemeral=True)
+    user_id = interaction.user.id
+    folder_info = user_folders.get(user_id)
+
+    if not folder_info:
+        return await interaction.followup.send("No downloaded files found. Please upload files first.", ephemeral=True)
+    
+    print(user_id)
+    print(folder_info)
+    await interaction.followup.send(f"{folder_info}", ephemeral=True)
+    # pdf_files = folder_info.get("pdf_files", [])
+    
+    # try:
+    #     # Call your script's main function here
+    #     await interaction.followup.send("Extracting equations from PDF...")
+
+    #     os.system('python3 extract_equations.py')
+
+    #     # After the script runs, send the results
+    #     with open("equations_output.json", "r") as f:
+    #         equations_data = json.load(f)
+
+    #     # Format and send the results
+    #     equations_message = f"Extracted LaTeX Equations:\n{equations_data}"
+    #     await interaction.followup.send(equations_message, ephemeral=True)
+    
+    # except Exception as e:
+    #     await interaction.followup.send(f"An error occurred: {e}", ephemeral=True)
 
 # Start the bot
 def main() -> None:
