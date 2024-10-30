@@ -10,6 +10,7 @@ from discord.ext import commands
 from ai_command import getAiresponse
 from Discord_Googledrive2 import done,enter_email,upload
 import json
+from milvus_handler import get_collection_name
 
 # Load token from a safe place
 load_dotenv()
@@ -183,6 +184,9 @@ async def command_extract_equations(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)  # Defer the interaction
     
     user_id = interaction.user.id
+    collection_name = get_collection_name(user_id)
+    print(collection_name)
+    
     folder_info = user_folders.get(user_id)
 
     if not folder_info:
