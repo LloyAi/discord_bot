@@ -5,6 +5,7 @@ from typing_extensions import override
 from openai import AssistantEventHandler
 import re 
 from dotenv import load_dotenv
+import sys
 
 load_dotenv()
 # Initialize OpenAI Client
@@ -152,8 +153,15 @@ if __name__ == "__main__":
     # Step 1: Create or load the assistant
     assistant = create_or_load_assistant()
 
-    # Step 2: Upload files and create or load a vector store
-    file_paths = ["sample_docs/Whitepaper Highlighted.pdf"]   # Add your file paths here
+    # # Step 2: Upload files and create or load a vector store
+    # file_paths = ["sample_docs/Whitepaper Highlighted.pdf"]   # Add your file paths here
+    # vector_store = create_or_load_vector_store(file_paths)
+
+    # Step 2: Get the file paths from command-line arguments
+    file_paths = sys.argv[1:]  # Get all arguments passed after the script name
+    print(file_paths)
+    if not file_paths:
+        raise ValueError("No PDF file paths provided. Please provide valid file paths as arguments.")
     vector_store = create_or_load_vector_store(file_paths)
 
     # Step 3: Save assistant and vector store data for persistence
