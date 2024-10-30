@@ -193,13 +193,18 @@ async def command_extract_equations(interaction: discord.Interaction):
     script_directory = os.path.dirname(os.path.abspath(__file__))
     pdf_folder_path = os.path.join(script_directory, folder_path)
     
+    print(folder_info)
+    print(folder_path)
+    print(script_directory)
+    print(pdf_folder_path)
+    
     # Collect all PDF file paths from the directory
     pdf_files = [os.path.join(pdf_folder_path, f) for f in os.listdir(pdf_folder_path) if f.endswith('.pdf')]
     if not pdf_files:
             return await interaction.followup.send("No PDF files found in the specified folder.", ephemeral=True)
     
     print(pdf_files)
-    
+
     try:
         # Call your script's main function here
         await interaction.followup.send("Extracting equations from PDF...")
