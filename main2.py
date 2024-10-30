@@ -10,7 +10,7 @@ from discord.ext import commands
 from ai_command import getAiresponse
 from Discord_Googledrive2 import done,enter_email,upload
 import json
-from milvus_handler import get_collection_name
+from Discord_Googledrive2 import user_folders
 
 # Load token from a safe place
 load_dotenv()
@@ -176,17 +176,11 @@ async def command_done(interaction: discord.Interaction):
     await interaction.response.send_message("Indexing Files...\nWe will send a message when your context is ready.", ephemeral=True)  # Send initial response
     await done(interaction)  # Run the main function
 
-from Discord_Googledrive2 import user_folders
-
-
 @client.tree.command(name="extract_equations", description="Extract LaTeX equations from PDF")
 async def command_extract_equations(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)  # Defer the interaction
     
     user_id = interaction.user.id
-    collection_name = get_collection_name(user_id)
-    print(collection_name)
-    
     folder_info = user_folders.get(user_id)
 
     if not folder_info:
@@ -197,17 +191,11 @@ async def command_extract_equations(interaction: discord.Interaction):
     script_directory = os.path.dirname(os.path.abspath(__file__))
     pdf_folder_path = os.path.join(script_directory, folder_path)
     
-    print(folder_info)
-    print(folder_path)
-    print(script_directory)
-    print(pdf_folder_path)
-    
     # Collect all PDF file paths from the directory
     pdf_files = [os.path.join(pdf_folder_path, f) for f in os.listdir(pdf_folder_path) if f.endswith('.pdf')]
     if not pdf_files:
             return await interaction.followup.send("No PDF files found in the specified folder.", ephemeral=True)
     
-    print(pdf_files)
 
     try:
         # Call your script's main function here
