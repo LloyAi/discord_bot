@@ -15,16 +15,18 @@ def getAiresponse(query_text, User_id):
         print("We found context")
         
         if query_result:
+            print('logging- query result')
             # Collect all matching functions' full text
             function_contexts = [result['entity']['text'] for result in query_result[0] if result.get('entity', {}).get('text')]
             
             if function_contexts:
+                print('logging- function_contexts')
                 # Combine all relevant functions into a single context string
                 full_context = "\n\n".join(function_contexts)
                 
                 # Generate a response using OpenAI's language model
                 response = openai_client.chat.completions.create(
-                    model="gpt-4o-mini",  # Or any other model you prefer
+                    model="gpt-4o",  # Or any other model you prefer
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant."},
                         {"role": "user", "content": f"Here is data: {full_context}."},
@@ -33,13 +35,27 @@ def getAiresponse(query_text, User_id):
                 )
                 
                 # Extract and print the generated response
-                generated_response = response.choices[0].message.content.strip()
-                print(generated_response)
+                generted_context_res = response.choices[0].message.content.strip()
+                if generted_context_res:
+                    print('logging- generted_context_res')
+                    generated_response = response.choices[0].message.content.strip()
+                else:
+                    response = openai_client.chat.completions.create(
+                    model="gpt-4o",  # Or any other model you prefer
+                    messages=[
+                        {"role": "system", "content": "You are a senior software engineer."},
+                        {"role": "user", "content": f"Here is data: {full_context}."},
+                        {"role": "user", "content": f"Please answer the following question: {query_text}."}
+                    ]
+                )
+                    generated_response =  response.choices[0].message.content.strip()
+                print(f'. {generated_response}')
             else:
                 print("No relevant data found in the Milvus collection.")
         else:
             print("No relevant data found in the Milvus collection.")
     else:
         print("Query text exceeds token limit.")
-   
+    
+    
     return generated_response
