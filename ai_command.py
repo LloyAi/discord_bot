@@ -12,6 +12,7 @@ def getAiresponse(query_text, User_id):
     if query_embedding is not None:
         # Query Milvus for relevant context
         query_result = query_milvus(np.array([query_embedding]), User_id, limit=5)
+        print(query_result)
         print("We found context")
         
         if query_result:
