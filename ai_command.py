@@ -11,8 +11,7 @@ def getAiresponse(query_text, User_id):
     
     if query_embedding is not None:
         # Query Milvus for relevant context
-        query_result = query_milvus(np.array([query_embedding]), User_id, limit=5)
-        print(query_result)
+        query_result, passes_threshold = query_milvus(np.array([query_embedding]), User_id, limit=5)
         print("We found context")
         
         if query_result:
@@ -25,19 +24,17 @@ def getAiresponse(query_text, User_id):
                 # Combine all relevant functions into a single context string
                 full_context = "\n\n".join(function_contexts)
                 
-                # Generate a response using OpenAI's language model
-                response = openai_client.chat.completions.create(
-                    model="gpt-4o",  # Or any other model you prefer
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant."},
-                        {"role": "user", "content": f"Here is data: {full_context}."},
-                        {"role": "user", "content": f"Based on the above data, please answer the following query: {query_text}."}
-                    ]
-                )
-                
-                # Extract and print the generated response
-                generted_context_res = response.choices[0].message.content.strip()
-                if generted_context_res:
+                if passes_threshold:
+                    # Generate a response using OpenAI's language model
+                    response = openai_client.chat.completions.create(
+                        model="gpt-4o",  # Or any other model you prefer
+                        messages=[
+                            {"role": "system", "content": "You are a helpful assistant."},
+                            {"role": "user", "content": f"Here is data: {full_context}."},
+                            {"role": "user", "content": f"Based on the above data, please answer the following query: {query_text}."}
+                        ]
+                    )
+
                     print('logging- generted_context_res')
                     generated_response = response.choices[0].message.content.strip()
                 else:

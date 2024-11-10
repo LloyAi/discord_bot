@@ -1,5 +1,6 @@
 from pymilvus import MilvusClient
 import numpy as np
+import json
 
 # Initialize Milvus Client
 client = MilvusClient("CodingAssistantMaster2.db")
@@ -45,9 +46,24 @@ def query_milvus(query_embedding, User_id, limit=5):
     query_embedding = query_embedding.tolist()
     if not client.has_collection(collection_name=collection_name):
         create_milvus_collection(User_id, dimension=1536)
-    return client.search(
+    
+    search_res = client.search(
         collection_name=collection_name,
         data=query_embedding,
         limit=limit,
         output_fields=["text", "subject"]
     )
+    print(search_res, type(search_res))
+    # Parse the JSON string
+    parsed_data = json.loads(search_res)
+
+    # Print the parsed data
+    print(parsed_data)
+    ## similarity threshold (close to 0, more similar it is - over 0.02 seems irrelevant)
+    threshold_dist = 0.02
+    passes_threshold = True
+    for data in parsed_data:
+        if data['distance'] > threshold_dist:
+            passes_threshold = False
+            break
+    return search_res, passes_threshold
