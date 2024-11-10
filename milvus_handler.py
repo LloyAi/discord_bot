@@ -54,16 +54,13 @@ def query_milvus(query_embedding, User_id, limit=5):
         output_fields=["text", "subject"]
     )
     print(search_res, type(search_res))
-    # Parse the JSON string
-    parsed_data = json.loads(search_res)
-
-    # Print the parsed data
-    print(parsed_data)
+   
     ## similarity threshold (close to 0, more similar it is - over 0.02 seems irrelevant)
     threshold_dist = 0.02
     passes_threshold = True
-    for data in parsed_data:
-        if data['distance'] > threshold_dist:
+
+    for data in search_res[0]:
+        if data.get('distance') > threshold_dist:
             passes_threshold = False
             break
     return search_res, passes_threshold
