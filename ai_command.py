@@ -5,17 +5,36 @@ from milvus_handler import query_milvus, client as milvus_client
 def getAiresponse(query_text, User_id, user_name, db_conn):
 
     def save_user_history(user_name, user_message, bot_response):
-        print('saving chat history in db')
+        print('Saving chat history in DB...')
         with db_conn.cursor() as cur:
             cur.execute(
                 "INSERT INTO chat_history (user_name, user_message, bot_response) VALUES (%s, %s, %s)",
                 (user_name, user_message, bot_response )
             )
             db_conn.commit()
+    
+    def fetch_user_history(user_name, limit=10):
+        print('Fetching user history from DB...')
+        with db_conn.cursor() as cur:
+            cur.execute(
+                "SELECT user_message, bot_response FROM chat_history WHERE user_name = %s ORDER BY timestamp DESC LIMIT %s",
+                (user_name, limit)
+            )
+            return cur.fetchall()
 
     print("We just got the embedding")
     generated_response = "Sorry, I could not find any relevant information to respond to your query."  # Default response
     
+    # Fetch user history and format it
+    chat_history = fetch_user_history(user_name)
+    print('chat_history',chat_history)
+    if chat_history:
+        history_context = "\n".join(
+            f"User: {msg}\nAssistant: {resp}" for msg, resp in reversed(chat_history)
+        )
+    else:
+        history_context = ""
+
     # Get the embedding for the query text
     query_embedding = get_openai_embedding(query_text)
     
@@ -33,16 +52,27 @@ def getAiresponse(query_text, User_id, user_name, db_conn):
                 print('logging- function_contexts')
                 # Combine all relevant functions into a single context string
                 full_context = "\n\n".join(function_contexts)
+                messages = [
+                    {"role": "system", "content": "You are a helpful assistant."},
+                ]
+                if history_context:
+                    messages.append({"role": "user", "content": f"Here is our conversation history:\n{history_context}"})
                 
+                messages.extend([
+                    {"role": "user", "content": f"Here is data: {full_context}."},
+                    {"role": "user", "content": f"Based on the above data, please answer the following query: {query_text}."}
+                ])
+
+                # response = openai_client.chat.completions.create(
+                #     model="gpt-4",  # Or any other model you prefer
+                #     messages=messages
+                # )
+
                 if passes_threshold:
                     # Generate a response using OpenAI's language model
                     response = openai_client.chat.completions.create(
                         model="gpt-4o",  # Or any other model you prefer
-                        messages=[
-                            {"role": "system", "content": "You are a helpful assistant."},
-                            {"role": "user", "content": f"Here is data: {full_context}."},
-                            {"role": "user", "content": f"Based on the above data, please answer the following query: {query_text}."}
-                        ]
+                        messages=messages
                     )
 
                     print('logging- generted_context_res')
@@ -50,11 +80,7 @@ def getAiresponse(query_text, User_id, user_name, db_conn):
                 else:
                     response = openai_client.chat.completions.create(
                     model="gpt-4o",  # Or any other model you prefer
-                    messages=[
-                        {"role": "system", "content": "You are a senior software engineer."},
-                        {"role": "user", "content": f"Here is data: {full_context}."},
-                        {"role": "user", "content": f"Please answer the following question: {query_text}."}
-                    ]
+                    messages=messages
                 )
                     generated_response =  response.choices[0].message.content.strip()
                 print(f'. {generated_response}')
