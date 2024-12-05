@@ -2,7 +2,17 @@ import numpy as np
 from embedding_handler import get_openai_embedding, client as openai_client
 from milvus_handler import query_milvus, client as milvus_client
 
-def getAiresponse(query_text, User_id):
+def getAiresponse(query_text, User_id, user_name, db_conn):
+
+    def save_user_history(user_name, user_message, bot_response):
+        print('saving chat history in db')
+        with db_conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO chat_history (user_name, user_message, bot_response) VALUES (%s, %s, %s)",
+                (user_name, user_message, bot_response )
+            )
+            db_conn.commit()
+
     print("We just got the embedding")
     generated_response = "Sorry, I could not find any relevant information to respond to your query."  # Default response
     
@@ -55,5 +65,6 @@ def getAiresponse(query_text, User_id):
     else:
         print("Query text exceeds token limit.")
     
+    save_user_history(user_name, query_text, generated_response)
     
     return generated_response

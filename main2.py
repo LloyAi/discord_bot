@@ -11,6 +11,9 @@ from ai_command import getAiresponse
 from Discord_Googledrive2 import done,enter_email,upload
 import json
 from Discord_Googledrive2 import user_folders
+from db import *
+
+db_connection = connect_to_rds()
 
 # Load token from a safe place
 load_dotenv()
@@ -58,7 +61,7 @@ async def send_message(message: Message, user_message: str, username: str, userI
     try:
         if user_message.startswith('.AI'):
             #answer = get_response(user_message[3:].strip())
-            answer = getAiresponse(user_message[3:].strip(),userID)
+            answer = getAiresponse(user_message[3:].strip(), userID, username, db_connection)
         else:
             convo_id = get_id(username)
            # response_json = get_docbot_response(user_message[4:].strip(), convo_id)
@@ -102,8 +105,12 @@ async def send_message(message: Message, user_message: str, username: str, userI
 # Handling the startup for the bot      
 @client.event
 async def on_ready() -> None:
-    await client.tree.sync()  # Sync the command tree on startup
-    print(f'{client.user} is now running and slash commands are synced!')
+    if db_connection:
+        print("Database connected!")
+    else:
+        print("Failed to connect to the database.")
+    await client.tree.sync()
+    print(f'{client.user} is now running!')
 
 # Combined event to handle both messages and file uploads
 @client.event
