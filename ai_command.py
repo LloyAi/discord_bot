@@ -64,7 +64,8 @@ def getAiresponse(query_text, User_id, user_name, db_conn):
             print("No relevant data found in the Milvus collection.")
     else:
         print("Query text exceeds token limit.")
-    
-    save_user_history(user_name, query_text, generated_response)
+
+    if 'josh' in user_name:
+        save_user_history(user_name, query_text, generated_response)
     
     return generated_response
