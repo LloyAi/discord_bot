@@ -97,7 +97,7 @@ def save_file_metadata(file_id, file_name, db_conn):
     try:
         with db_conn.cursor() as cur:
             cur.execute(
-                "INSERT INTO file_metadata (file_id, name) VALUES (%s, %s) ON CONFLICT (file_id) DO NOTHING",
+                "INSERT INTO file_metadata (file_id, name) VALUES (%s, %s)",
                 (file_id, file_name)
             )
             db_conn.commit()
