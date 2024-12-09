@@ -10,9 +10,8 @@ from discord.ext import commands
 from ai_command import getAiresponse
 from Discord_Googledrive2 import done,enter_email,upload
 import json
-from Discord_Googledrive2 import user_folders
+from Discord_Googledrive2 import user_folders, create_drive_service, get_all_files_in_folder, download_file
 from db import *
-from .Discord_Googledrive2 import create_drive_service, get_all_files_in_folder, download_file
 from .done_command import process_and_store_context
 
 db_connection = connect_to_rds()
@@ -234,7 +233,7 @@ async def ajna(interaction: discord.Interaction, msg: str):
     await interaction.response.defer(ephemeral=True)  # Defer the interaction
     
     print(msg)
-    
+
     folder_id = "1lnTwkJc_t0dOh0ZfqVh47j6WEHVZzp_F"
     db_conn = connect_to_rds()
     service = create_drive_service()
