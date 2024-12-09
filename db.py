@@ -91,14 +91,29 @@ def save_user_folder_path(user_name, folder_path, db_conn):
 
 #     except Exception as e:
 #         print(f"Error: {e}")
-    
-# def test():
-    
-#     print_table_details('chat_history')
-#     print_table_details('user_folder')
 
-#     fetch_records('chat_history')
-#     fetch_records('user_folder')
+# Save file tracking data to the database
+def save_file_metadata(file_id, file_name, db_conn):
+    try:
+        with db_conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO file_metadata (file_id, file_name) VALUES (%s, %s) ON CONFLICT (file_id) DO NOTHING",
+                (file_id, file_name)
+            )
+            db_conn.commit()
+            print(f"Saved metadata for file: {file_name}")
+    except Exception as e:
+        print(f"Error saving metadata: {e}")
+        db_conn.rollback()
+
+# def test():
+
+    
+#     # print_table_details('chat_history')
+#     # print_table_details('user_folder')
+
+#     # fetch_records('chat_history')
+#     # fetch_records('user_folder')
 
 #     if connection:
 #         connection.close()

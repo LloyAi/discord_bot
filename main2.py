@@ -12,8 +12,12 @@ from Discord_Googledrive2 import done,enter_email,upload
 import json
 from Discord_Googledrive2 import user_folders
 from db import *
+from .Discord_Googledrive2 import create_drive_service, get_all_files_in_folder, download_file
+from .done_command import process_and_store_context
 
 db_connection = connect_to_rds()
+
+ajna_folder_link = "https://drive.google.com/drive/folders/1lnTwkJc_t0dOh0ZfqVh47j6WEHVZzp_F"
 
 # Load token from a safe place
 load_dotenv()
@@ -224,6 +228,35 @@ async def command_extract_equations(interaction: discord.Interaction):
     
     except Exception as e:
         await interaction.followup.send(f"An error occurred: {e}", ephemeral=True)
+
+@client.tree.command(name="ajna")
+async def ajna(interaction: discord.Interaction, msg: str):
+    await interaction.response.defer(ephemeral=True)  # Defer the interaction
+    
+    print(msg)
+    
+    folder_id = "1lnTwkJc_t0dOh0ZfqVh47j6WEHVZzp_F"
+    db_conn = connect_to_rds()
+    service = create_drive_service()
+
+    files = get_all_files_in_folder(service, folder_id)
+    print(files)
+    if not files:
+        return await interaction.followup.send("No files found in the folder.", ephemeral=True)
+
+    destination_folder = "downloaded_files"
+    os.makedirs(destination_folder, exist_ok=True)
+
+    for file in files:
+        file_id = file['id']
+        file_name = file['name']
+        save_file_metadata(file_id, file_name, db_conn)
+        download_file(service, file_id, destination_folder, file_name)
+
+    file_data = {file_name: open(os.path.join(destination_folder, file_name)).read() for file_name in os.listdir(destination_folder)}
+    await process_and_store_context(file_data, interaction.user.id, db_conn)
+
+    await interaction.followup.send("Context processed and stored successfully!", ephemeral=True)
 
 # Start the bot
 def main() -> None:

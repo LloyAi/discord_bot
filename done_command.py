@@ -95,6 +95,29 @@ async def getDownloadedFileFolder(folder_path, interaction: discord.Interaction)
     await process_and_insert_functions(file_data, interaction)
     await interaction.followup.send("Success!! Your uploaded context is ready to use.", ephemeral=True)
 
+# Process files and insert their context into Milvus
+async def process_and_store_context(file_data, user_id, db_conn):
+    create_milvus_collection(str(user_id), dimension=1536)  # Create or ensure collection exists
+    data = []
+    id_counter = 0
+
+    for file_name, content in file_data.items():
+        functions = detect_and_parse_functions(content)  # Detect and parse functions
+        for func in functions:
+            embedding = get_openai_embedding(func['full_function'])
+            if embedding:
+                data.append({
+                    "id": id_counter,
+                    "vector": embedding.tolist(),
+                    "text": func['full_function'],
+                    "subject": func['type']
+                })
+                id_counter += 1
+
+    if data:
+        insert_into_milvus(data, str(user_id))
+        print(f"Inserted {len(data)} records into Milvus for user {user_id}.")
+        
 if __name__ == "__main__":
     folder_path = 'ajna-core-2d6bbcb39a020a041d5243eadd8f4cb77e85c41b'  # Replace with your folder path
 
