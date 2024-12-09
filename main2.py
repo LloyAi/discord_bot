@@ -62,6 +62,9 @@ async def send_message(message: Message, user_message: str, username: str, userI
         if user_message.startswith('.AI'):
             #answer = get_response(user_message[3:].strip())
             answer = getAiresponse(user_message[3:].strip(), userID, username, db_connection)
+        elif user_message.startswith('.Ajna'):
+
+            answer = getAiresponse(user_message[3:].strip(), userID, username, db_connection, is_saved=True)
         else:
             convo_id = get_id(username)
            # response_json = get_docbot_response(user_message[4:].strip(), convo_id)
@@ -123,7 +126,7 @@ async def on_message(message: Message) -> None:
 
 
     # Check if the message contains a command or is a file upload
-    if user_message.startswith(('.AI', '.bot')):
+    if user_message.startswith(('.AI', '.bot','.Ajna')):
         username = str(message.author)
         channel = str(message.channel)
         user_id = str(message.author.id)

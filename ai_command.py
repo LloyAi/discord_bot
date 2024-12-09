@@ -2,7 +2,7 @@ import numpy as np
 from embedding_handler import get_openai_embedding, client as openai_client
 from milvus_handler import query_milvus, client as milvus_client
 
-def getAiresponse(query_text, User_id, user_name, db_conn):
+def getAiresponse(query_text, User_id, user_name, db_conn, is_saved=False):
 
     def save_user_history(user_name, user_message, bot_response):
         print('Saving chat history in DB...')
@@ -13,7 +13,7 @@ def getAiresponse(query_text, User_id, user_name, db_conn):
             )
             db_conn.commit()
     
-    def fetch_user_history(user_name, limit=10):
+    def fetch_user_history(user_name, limit=20):
         print('Fetching user history from DB...')
         with db_conn.cursor() as cur:
             cur.execute(
@@ -26,14 +26,14 @@ def getAiresponse(query_text, User_id, user_name, db_conn):
     generated_response = "Sorry, I could not find any relevant information to respond to your query."  # Default response
     
     # Fetch user history and format it
-    chat_history = fetch_user_history(user_name)
-    print('chat_history',chat_history)
-    if chat_history:
-        history_context = "\n".join(
-            f"User: {msg}\nAssistant: {resp}" for msg, resp in reversed(chat_history)
-        )
-    else:
-        history_context = ""
+    history_context = ""
+    if is_saved:
+        chat_history = fetch_user_history(user_name)
+        print('chat_history',chat_history)
+        if chat_history:
+            history_context = "\n".join(
+                f"User: {msg}\nAssistant: {resp}" for msg, resp in reversed(chat_history)
+            )
 
     # Get the embedding for the query text
     query_embedding = get_openai_embedding(query_text)
@@ -69,21 +69,29 @@ def getAiresponse(query_text, User_id, user_name, db_conn):
                 # )
 
                 if passes_threshold:
-                    # Generate a response using OpenAI's language model
-                    response = openai_client.chat.completions.create(
-                        model="gpt-4o",  # Or any other model you prefer
-                        messages=messages
-                    )
-
-                    print('logging- generted_context_res')
-                    generated_response = response.choices[0].message.content.strip()
+                    # Generate the response
+                    try:
+                        response = openai_client.chat.completions.create(
+                            model="gpt-4o",
+                            messages=messages
+                        )
+                        print('logging- generated_context_res')
+                        generated_response = response.choices[0].message.content.strip()
+                    except Exception as e:
+                        print(f"OpenAI API error: {e}")
+                    print(f"Generated Response: {generated_response}")
                 else:
-                    response = openai_client.chat.completions.create(
-                    model="gpt-4o",  # Or any other model you prefer
-                    messages=messages
-                )
-                    generated_response =  response.choices[0].message.content.strip()
-                print(f'. {generated_response}')
+                    # Generate the response
+                    try:
+                        response = openai_client.chat.completions.create(
+                            model="gpt-4o",
+                            messages=messages
+                        )
+                        print('logging- generated_context_res')
+                        generated_response = response.choices[0].message.content.strip()
+                    except Exception as e:
+                        print(f"OpenAI API error: {e}")
+                    print(f"Generated Response: {generated_response}")
             else:
                 print("No relevant data found in the Milvus collection.")
         else:
@@ -91,7 +99,7 @@ def getAiresponse(query_text, User_id, user_name, db_conn):
     else:
         print("Query text exceeds token limit.")
 
-    if 'josh' in user_name:
+    if is_saved and generated_response!="Sorry, I could not find any relevant information to respond to your query.":
         save_user_history(user_name, query_text, generated_response)
     
     return generated_response
