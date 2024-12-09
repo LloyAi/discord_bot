@@ -65,9 +65,42 @@ async def send_message(message: Message, user_message: str, username: str, userI
         if user_message.startswith('.AI'):
             #answer = get_response(user_message[3:].strip())
             answer = getAiresponse(user_message[3:].strip(), userID, username, db_connection)
-        elif user_message.startswith('.Ajna'):
 
-            answer = getAiresponse(user_message[5:].strip(), userID, username, db_connection, is_saved=True)
+        elif user_message.startswith('.Ajna'):
+            print(user_message[5:].strip())
+            folder_id = "1lnTwkJc_t0dOh0ZfqVh47j6WEHVZzp_F"
+            service = create_drive_service()
+
+            files = get_all_files_in_folder(service, folder_id)
+            print(files)
+            if not files:
+                print("No files found in the folder")
+                return
+
+            destination_folder = "downloaded_files"
+            os.makedirs(destination_folder, exist_ok=True)
+
+            for file in files:
+                file_id = file['id']
+                file_name = file['name']
+                # Check if the file ID exists in the database
+                query = "SELECT COUNT(*) FROM file_metadata WHERE file_id = %s"
+                with db_connection.cursor() as cur:
+                    cur.execute(query, (file_id,))
+                    file_exists = cur.fetchone()[0] > 0
+
+                if not file_exists:
+                    print(f"File ID {file_id} not found in database. Downloading...")
+                    save_file_metadata(file_id, file_name, db_connection)
+                    download_file(service, file_id, destination_folder, file_name)
+                else:
+                    print(f"File ID {file_id} already exists in database. Skipping download.")
+
+            file_data = {file_name: open(os.path.join(destination_folder, file_name)).read() for file_name in os.listdir(destination_folder)}
+            await process_and_store_context(file_data, userID, db_connection)
+
+            print("Context processed and stored successfully!")
+            # answer = getAiresponse(user_message[5:].strip(), userID, username, db_connection, is_saved=True)
         else:
             convo_id = get_id(username)
            # response_json = get_docbot_response(user_message[4:].strip(), convo_id)
@@ -228,34 +261,34 @@ async def command_extract_equations(interaction: discord.Interaction):
     except Exception as e:
         await interaction.followup.send(f"An error occurred: {e}", ephemeral=True)
 
-@client.tree.command(name="ajna")
-async def ajna(interaction: discord.Interaction, msg: str):
-    await interaction.response.defer(ephemeral=True)  # Defer the interaction
+# @client.tree.command(name="ajna")
+# async def ajna(interaction: discord.Interaction, msg: str):
+#     await interaction.response.defer(ephemeral=True)  # Defer the interaction
     
-    print(msg)
+#     print(msg)
 
-    folder_id = "1lnTwkJc_t0dOh0ZfqVh47j6WEHVZzp_F"
-    db_conn = connect_to_rds()
-    service = create_drive_service()
+#     folder_id = "1lnTwkJc_t0dOh0ZfqVh47j6WEHVZzp_F"
+#     db_conn = connect_to_rds()
+#     service = create_drive_service()
 
-    files = get_all_files_in_folder(service, folder_id)
-    print(files)
-    if not files:
-        return await interaction.followup.send("No files found in the folder.", ephemeral=True)
+#     files = get_all_files_in_folder(service, folder_id)
+#     print(files)
+#     if not files:
+#         return await interaction.followup.send("No files found in the folder.", ephemeral=True)
 
-    destination_folder = "downloaded_files"
-    os.makedirs(destination_folder, exist_ok=True)
+#     destination_folder = "downloaded_files"
+#     os.makedirs(destination_folder, exist_ok=True)
 
-    for file in files:
-        file_id = file['id']
-        file_name = file['name']
-        save_file_metadata(file_id, file_name, db_conn)
-        download_file(service, file_id, destination_folder, file_name)
+#     for file in files:
+#         file_id = file['id']
+#         file_name = file['name']
+#         save_file_metadata(file_id, file_name, db_conn)
+#         download_file(service, file_id, destination_folder, file_name)
 
-    file_data = {file_name: open(os.path.join(destination_folder, file_name)).read() for file_name in os.listdir(destination_folder)}
-    await process_and_store_context(file_data, interaction.user.id, db_conn)
+#     file_data = {file_name: open(os.path.join(destination_folder, file_name)).read() for file_name in os.listdir(destination_folder)}
+#     await process_and_store_context(file_data, interaction.user.id, db_conn)
 
-    await interaction.followup.send("Context processed and stored successfully!", ephemeral=True)
+#     await interaction.followup.send("Context processed and stored successfully!", ephemeral=True)
 
 # Start the bot
 def main() -> None:
