@@ -248,9 +248,6 @@ async def done(interaction: discord.Interaction):
     if not os.path.exists(destination_path):
         os.makedirs(destination_path)
 
-    db_conn = connect_to_rds()
-    print('user_name', interaction.user.name)
-    save_user_folder_path(interaction.user.name, destination_path, db_conn)
 
     # Get all files in the specified folder
     files = get_all_files_in_folder(service, Folder_Id)
