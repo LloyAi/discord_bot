@@ -12,7 +12,7 @@ from Discord_Googledrive2 import done,enter_email,upload
 import json
 from Discord_Googledrive2 import user_folders, create_drive_service, get_all_files_in_folder, download_file
 from db import *
-from .done_command import process_and_store_context
+from done_command import process_and_store_context
 
 db_connection = connect_to_rds()
 
