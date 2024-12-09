@@ -8,7 +8,7 @@ def getAiresponse(query_text, User_id, user_name, db_conn, is_saved=False):
         print('Saving chat history in DB...')
         with db_conn.cursor() as cur:
             cur.execute(
-                "INSERT INTO chat_history (user_name, user_message, bot_response) VALUES (%s, %s, %s)",
+                "INSERT INTO user_history (user_name, user_message, bot_response) VALUES (%s, %s, %s)",
                 (user_name, user_message, bot_response )
             )
             db_conn.commit()
@@ -17,7 +17,7 @@ def getAiresponse(query_text, User_id, user_name, db_conn, is_saved=False):
         print('Fetching user history from DB...')
         with db_conn.cursor() as cur:
             cur.execute(
-                "SELECT user_message, bot_response FROM chat_history WHERE user_name = %s ORDER BY timestamp DESC LIMIT %s",
+                "SELECT user_message, bot_response FROM user_history WHERE user_name = %s ORDER BY timestamp DESC LIMIT %s",
                 (user_name, limit)
             )
             return cur.fetchall()
