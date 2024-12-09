@@ -105,7 +105,7 @@ async def process_and_store_context(file_data, user_id, db_conn):
         functions = detect_and_parse_functions(content)  # Detect and parse functions
         for func in functions:
             embedding = get_openai_embedding(func['full_function'])
-            if embedding:
+            if embedding is not None and len(embedding) > 0:
                 data.append({
                     "id": id_counter,
                     "vector": embedding.tolist(),
@@ -117,7 +117,7 @@ async def process_and_store_context(file_data, user_id, db_conn):
     if data:
         insert_into_milvus(data, str(user_id))
         print(f"Inserted {len(data)} records into Milvus for user {user_id}.")
-        
+
 if __name__ == "__main__":
     folder_path = 'ajna-core-2d6bbcb39a020a041d5243eadd8f4cb77e85c41b'  # Replace with your folder path
 
