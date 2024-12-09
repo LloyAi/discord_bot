@@ -53,7 +53,7 @@ def query_milvus(query_embedding, User_id, limit=5):
         limit=limit,
         output_fields=["text", "subject"]
     )
-    print(search_res, type(search_res))
+    # print(search_res, type(search_res))
    
     ## similarity threshold (close to 0, more similar it is - over 0.02 seems irrelevant)
     threshold_dist = 0.02

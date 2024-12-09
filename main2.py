@@ -64,7 +64,7 @@ async def send_message(message: Message, user_message: str, username: str, userI
             answer = getAiresponse(user_message[3:].strip(), userID, username, db_connection)
         elif user_message.startswith('.Ajna'):
 
-            answer = getAiresponse(user_message[3:].strip(), userID, username, db_connection, is_saved=True)
+            answer = getAiresponse(user_message[5:].strip(), userID, username, db_connection, is_saved=True)
         else:
             convo_id = get_id(username)
            # response_json = get_docbot_response(user_message[4:].strip(), convo_id)
