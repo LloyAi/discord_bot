@@ -106,6 +106,7 @@ async def send_message(message: Message, user_message: str, username: str, userI
                         file_data[file_name] = file.read()
                 except Exception as e:
                     print(f"Error reading file {file_name}: {e}")
+            print('file_data',file_data)
             await process_and_store_context(file_data, userID, db_connection)
 
             print("Context processed and stored successfully!")
