@@ -96,7 +96,16 @@ async def send_message(message: Message, user_message: str, username: str, userI
                 else:
                     print(f"File ID {file_id} already exists in database. Skipping download.")
 
-            file_data = {file_name: open(os.path.join(destination_folder, file_name)).read() for file_name in os.listdir(destination_folder)}
+            # file_data = {file_name: open(os.path.join(destination_folder, file_name)).read() for file_name in os.listdir(destination_folder)}
+            file_data = {}
+            for file_name in os.listdir(destination_folder):
+                file_path = os.path.join(destination_folder, file_name)
+                try:
+                    # Open and read the file with error handling for decoding issues
+                    with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
+                        file_data[file_name] = file.read()
+                except Exception as e:
+                    print(f"Error reading file {file_name}: {e}")
             await process_and_store_context(file_data, userID, db_connection)
 
             print("Context processed and stored successfully!")
