@@ -179,7 +179,7 @@ async def on_message(message: Message) -> None:
         
         print(f'[{channel}] {username}: "{user_message}"')
         
-        # await send_message(message, user_message, username, user_id)
+        await send_message(message, user_message, username, user_id)
 
     elif message.attachments and not message.author.bot:
         # Handle file upload and send the file URL back to the user
