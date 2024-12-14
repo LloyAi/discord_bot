@@ -106,7 +106,6 @@ async def send_message(message: Message, user_message: str, username: str, userI
                         file_data[file_name] = file.read()
                 except Exception as e:
                     print(f"Error reading file {file_name}: {e}")
-            print('file_data',file_data)
             await process_and_store_context(file_data, userID, db_connection)
 
             print("Context processed and stored successfully!")
@@ -180,7 +179,7 @@ async def on_message(message: Message) -> None:
         
         print(f'[{channel}] {username}: "{user_message}"')
         
-        await send_message(message, user_message, username, user_id)
+        # await send_message(message, user_message, username, user_id)
 
     elif message.attachments and not message.author.bot:
         # Handle file upload and send the file URL back to the user
