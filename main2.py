@@ -10,7 +10,7 @@ from discord.ext import commands
 from ai_command import getAiresponse
 from Discord_Googledrive2 import done,enter_email,upload
 import json
-from Discord_Googledrive2 import user_folders, create_drive_service, get_all_files_in_folder, download_file
+from Discord_Googledrive2 import user_folders, create_drive_service, get_all_files_in_folder, download_file, download_folder
 from db import *
 from done_command import process_and_store_context
 
@@ -83,18 +83,39 @@ async def send_message(message: Message, user_message: str, username: str, userI
             for file in files:
                 file_id = file['id']
                 file_name = file['name']
-                # Check if the file ID exists in the database
-                query = "SELECT COUNT(*) FROM file_metadata WHERE file_id = %s"
-                with db_connection.cursor() as cur:
-                    cur.execute(query, (file_id,))
-                    file_exists = cur.fetchone()[0] > 0
+                mime_type = file.get('mimeType', '')
+                
+                if mime_type == 'application/vnd.google-apps.folder':
+                    items = get_all_files_in_folder(service, file_id)
+                    print('items',items)
+                    download_folder(service, file_id, file_name, destination_folder)
 
-                if not file_exists:
-                    print(f"File ID {file_id} not found in database. Downloading...")
-                    save_file_metadata(file_id, file_name, db_connection)
-                    download_file(service, file_id, destination_folder, file_name)
+                    for item in items:
+                        # Check if the file ID exists in the database
+                        query = "SELECT COUNT(*) FROM file_metadata WHERE file_id = %s"
+                        with db_connection.cursor() as cur:
+                            cur.execute(query, (item['id'],))
+                            file_exists = cur.fetchone()[0] > 0
+
+                        if not file_exists:
+                            print(f"File ID {item['id']} not found in database. Downloading...")
+                            save_file_metadata(item['id'], item['name'], db_connection)
+                        else:
+                            print(f"File ID {file_id} already exists in database. Skipping download.")
+
                 else:
-                    print(f"File ID {file_id} already exists in database. Skipping download.")
+                    # Check if the file ID exists in the database
+                    query = "SELECT COUNT(*) FROM file_metadata WHERE file_id = %s"
+                    with db_connection.cursor() as cur:
+                        cur.execute(query, (file_id,))
+                        file_exists = cur.fetchone()[0] > 0
+
+                    if not file_exists:
+                        print(f"File ID {file_id} not found in database. Downloading...")
+                        save_file_metadata(file_id, file_name, db_connection)
+                        download_file(service, file_id, destination_folder, file_name)
+                    else:
+                        print(f"File ID {file_id} already exists in database. Skipping download.")
 
             # file_data = {file_name: open(os.path.join(destination_folder, file_name)).read() for file_name in os.listdir(destination_folder)}
             file_data = {}
