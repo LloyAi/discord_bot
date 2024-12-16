@@ -85,7 +85,6 @@ async def send_message(message: Message, user_message: str, username: str, userI
                 file_name = file['name']
                 mime_type = file['mimeType']
                 print('file',file)
-                print('mime_type',mime_type)
                 if mime_type == 'application/vnd.google-apps.folder':
                     items = get_all_files_in_folder(service, file_id)
                     print('items',items)
@@ -120,14 +119,25 @@ async def send_message(message: Message, user_message: str, username: str, userI
 
             # file_data = {file_name: open(os.path.join(destination_folder, file_name)).read() for file_name in os.listdir(destination_folder)}
             file_data = {}
-            for file_name in os.listdir(destination_folder):
-                file_path = os.path.join(destination_folder, file_name)
-                try:
-                    # Open and read the file with error handling for decoding issues
-                    with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
-                        file_data[file_name] = file.read()
-                except Exception as e:
-                    print(f"Error reading file {file_name}: {e}")
+            for root, _, files in os.walk(destination_folder):  # Walk through folders and files
+                for file_name in files:  # Only process files, not directories
+                    file_path = os.path.join(root, file_name)
+                    try:
+                        # Open and read the file with error handling for decoding issues
+                        with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
+                            file_data[file_name] = file.read()
+                    except Exception as e:
+                        print(f"Error reading file {file_name}: {e}")
+
+            # file_data = {}
+            # for file_name in os.listdir(destination_folder):
+            #     file_path = os.path.join(destination_folder, file_name)
+            #     try:
+            #         # Open and read the file with error handling for decoding issues
+            #         with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
+            #             file_data[file_name] = file.read()
+            #     except Exception as e:
+            #         print(f"Error reading file {file_name}: {e}")
             await process_and_store_context(file_data, userID, db_connection)
 
             print("Context processed and stored successfully!")
