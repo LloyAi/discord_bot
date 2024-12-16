@@ -84,7 +84,7 @@ async def send_message(message: Message, user_message: str, username: str, userI
                 file_id = file['id']
                 file_name = file['name']
                 mime_type = file.get('mimeType', '')
-                
+                print('mime_type',mime_type)
                 if mime_type == 'application/vnd.google-apps.folder':
                     items = get_all_files_in_folder(service, file_id)
                     print('items',items)
