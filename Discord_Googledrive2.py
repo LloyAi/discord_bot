@@ -88,7 +88,7 @@ def get_all_files_in_folder(service, folder_id):
     while True:
         response = service.files().list(
             q=query, 
-            fields="nextPageToken, files(id, name)", 
+            fields="nextPageToken, files(id, name, mimeType)", 
             pageSize=100, 
             pageToken=page_token
         ).execute()
