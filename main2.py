@@ -129,6 +129,11 @@ async def send_message(message: Message, user_message: str, username: str, userI
                     except Exception as e:
                         print(f"Error reading file {file_name}: {e}")
 
+            for root, dirs, files in os.walk(destination_folder):
+                print(f"Current Directory: {root}")
+                print(f"Subdirectories: {dirs}")
+                print(f"Files: {files}")
+
             # file_data = {}
             # for file_name in os.listdir(destination_folder):
             #     file_path = os.path.join(destination_folder, file_name)
