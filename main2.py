@@ -59,6 +59,9 @@ async def send_message(message: Message, user_message: str, username: str, userI
     is_private = user_message.startswith('?')
     if is_private:
         user_message = user_message[1:]
+        await message.author.send("Processing...")
+    else:
+        await message.channel.send("Processing...")
 
     sources = "No sources found."
     try:
