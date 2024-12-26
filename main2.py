@@ -285,7 +285,7 @@ async def command_extract_equations(interaction: discord.Interaction):
     except Exception as e:
         await interaction.followup.send(f"An error occurred: {e}", ephemeral=True)
 
-@client.tree.command(name="status", description="Trigger the main function")
+@client.tree.command(name="status", description="Number of users in database")
 # Command to display the number of users
 async def status(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)  # Defer the interaction to avoid timeouts
