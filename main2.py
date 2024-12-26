@@ -285,6 +285,14 @@ async def command_extract_equations(interaction: discord.Interaction):
     except Exception as e:
         await interaction.followup.send(f"An error occurred: {e}", ephemeral=True)
 
+@client.tree.command(name="status", description="Trigger the main function")
+# Command to display the number of users
+async def status(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)  # Defer the interaction to avoid timeouts
+    # Count the number of users across all guilds (servers) the bot is in
+    user_count = get_user_count(db_connection)
+    await interaction.followup.send(f"The bot is currently serving {user_count} users!", ephemeral=True)
+
 # Start the bot
 def main() -> None:
     client.run(TOKEN)
