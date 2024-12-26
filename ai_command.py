@@ -9,7 +9,7 @@ def getAiresponse(query_text, User_id, user_name, db_conn, is_saved=False):
         with db_conn.cursor() as cur:
             cur.execute(
                 "INSERT INTO user_history (user_name, user_message, bot_response) VALUES (%s, %s, %s)",
-                (user_name, user_message, bot_response )
+                (user_name, user_message, bot_response)
             )
             db_conn.commit()
     
@@ -29,7 +29,7 @@ def getAiresponse(query_text, User_id, user_name, db_conn, is_saved=False):
     history_context = ""
     if is_saved:
         chat_history = fetch_user_history(user_name)
-        print('chat_history',chat_history)
+        print('chat_history', chat_history)
         if chat_history:
             history_context = "\n".join(
                 f"User: {msg}\nAssistant: {resp}" for msg, resp in reversed(chat_history)
@@ -37,69 +37,51 @@ def getAiresponse(query_text, User_id, user_name, db_conn, is_saved=False):
 
     # Get the embedding for the query text
     query_embedding = get_openai_embedding(query_text)
-    
+
     if query_embedding is not None:
         # Query Milvus for relevant context
         query_result, passes_threshold = query_milvus(np.array([query_embedding]), User_id, limit=5)
         print("We found context")
-        
+
+        # Collect all matching functions' full text if any
+        function_contexts = []
         if query_result:
             print('logging- query result')
-            # Collect all matching functions' full text
             function_contexts = [result['entity']['text'] for result in query_result[0] if result.get('entity', {}).get('text')]
-            
-            if function_contexts:
-                print('logging- function_contexts')
-                # Combine all relevant functions into a single context string
-                full_context = "\n\n".join(function_contexts)
-                messages = [
-                    {"role": "system", "content": "You are a helpful assistant."},
-                ]
-                if history_context:
-                    messages.append({"role": "user", "content": f"Here is our conversation history:\n{history_context}"})
-                
-                messages.extend([
-                    {"role": "user", "content": f"Here is data: {full_context}."},
-                    {"role": "user", "content": f"Based on the above data, please answer the following query: {query_text}."}
-                ])
 
-                # response = openai_client.chat.completions.create(
-                #     model="gpt-4",  # Or any other model you prefer
-                #     messages=messages
-                # )
+        # Combine all relevant functions into a single context string
+        full_context = "\n\n".join(function_contexts) if function_contexts else "No relevant data found in the Milvus collection."
 
-                if passes_threshold:
-                    # Generate the response
-                    try:
-                        response = openai_client.chat.completions.create(
-                            model="gpt-4o",
-                            messages=messages
-                        )
-                        print('logging- generated_context_res')
-                        generated_response = response.choices[0].message.content.strip()
-                    except Exception as e:
-                        print(f"OpenAI API error: {e}")
-                    print(f"Generated Response: {generated_response}")
-                else:
-                    # Generate the response
-                    try:
-                        response = openai_client.chat.completions.create(
-                            model="gpt-4o",
-                            messages=messages
-                        )
-                        print('logging- generated_context_res')
-                        generated_response = response.choices[0].message.content.strip()
-                    except Exception as e:
-                        print(f"OpenAI API error: {e}")
-                    print(f"Generated Response: {generated_response}")
-            else:
-                print("No relevant data found in the Milvus collection.")
+        # Prepare the messages for OpenAI API
+        messages = [
+            {"role": "system", "content": "You are a helpful assistant."},
+        ]
+        if history_context:
+            messages.append({"role": "user", "content": f"Here is our conversation history:\n{history_context}"})
+        
+        if full_context != "No relevant data found in the Milvus collection.":
+            messages.extend([
+                {"role": "user", "content": f"Here is data: {full_context}."},
+                {"role": "user", "content": f"Based on the above data, please answer the following query: {query_text}."}
+            ])
         else:
-            print("No relevant data found in the Milvus collection.")
+            messages.append({"role": "user", "content": f"Please answer the following query: {query_text}."})
+
+        # Generate the response using OpenAI API
+        try:
+            response = openai_client.chat.completions.create(
+                model="gpt-4o",
+                messages=messages
+            )
+            print('logging- generated_context_res')
+            generated_response = response.choices[0].message.content.strip()
+        except Exception as e:
+            print(f"OpenAI API error: {e}")
+        print(f"Generated Response: {generated_response}")
     else:
         print("Query text exceeds token limit.")
 
-    if is_saved and generated_response!="Sorry, I could not find any relevant information to respond to your query.":
+    if is_saved and generated_response != "Sorry, I could not find any relevant information to respond to your query.":
         save_user_history(user_name, query_text, generated_response)
     
     return generated_response
