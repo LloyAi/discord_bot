@@ -92,33 +92,8 @@ async def send_message(message: Message, user_message: str, username: str, userI
                     items = get_all_files_in_folder(service, file_id)
                     print('items',items)
                     download_folder(service, file_id, file_name, destination_folder)
-
-                    for item in items:
-                        # Check if the file ID exists in the database
-                        query = "SELECT COUNT(*) FROM file_metadata WHERE file_id = %s"
-                        with db_connection.cursor() as cur:
-                            cur.execute(query, (item['id'],))
-                            file_exists = cur.fetchone()[0] > 0
-
-                        if not file_exists:
-                            print(f"File ID {item['id']} not found in database. Downloading...")
-                            save_file_metadata(item['id'], item['name'], db_connection)
-                        else:
-                            print(f"File ID {file_id} already exists in database. Skipping download.")
-
                 else:
-                    # Check if the file ID exists in the database
-                    query = "SELECT COUNT(*) FROM file_metadata WHERE file_id = %s"
-                    with db_connection.cursor() as cur:
-                        cur.execute(query, (file_id,))
-                        file_exists = cur.fetchone()[0] > 0
-
-                    if not file_exists:
-                        print(f"File ID {file_id} not found in database. Downloading...")
-                        save_file_metadata(file_id, file_name, db_connection)
-                        download_file(service, file_id, destination_folder, file_name)
-                    else:
-                        print(f"File ID {file_id} already exists in database. Skipping download.")
+                    download_file(service, file_id, destination_folder, file_name)
 
             # file_data = {file_name: open(os.path.join(destination_folder, file_name)).read() for file_name in os.listdir(destination_folder)}
             file_data = {}

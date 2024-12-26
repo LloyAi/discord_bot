@@ -33,6 +33,7 @@ user_folders: Dict[int, Dict[str, str]] = {}
 
 # Path to the service account JSON file
 GOOGLE_DRIVE_CREDENTIALS = r"bot-testing-433504-1b047b5aa458.json"
+db_connection = connect_to_rds()
 
 # Initialize the Google Drive API service
 def create_drive_service():
@@ -52,19 +53,31 @@ def download_file(service, file_id, destination_folder, file_name):
     # Handle the case where `destination_path` might be a directory
     if os.path.isdir(destination_path):
         raise IsADirectoryError(f"Destination path '{destination_path}' is a directory.")
+    
+    # Check if the file ID exists in the database
+    query = "SELECT COUNT(*) FROM file_metadata WHERE file_id = %s"
+    with db_connection.cursor() as cur:
+        cur.execute(query, (file_id,))
+        file_exists = cur.fetchone()[0] > 0
 
-    request = service.files().get_media(fileId=file_id)
+    if not file_exists:
+        print(f"File ID {file_id} not found in database. Downloading...")
+        request = service.files().get_media(fileId=file_id)
 
-    with open(destination_path, 'wb') as file:
-        downloader = MediaIoBaseDownload(file, request)
-        done = False
-        while not done:
-            status, done = downloader.next_chunk()
-            print(f"Download {int(status.progress() * 100)}%.")
-        
-    # Check the file paths
-    print(f"Downloaded {file_name} to {destination_path}")
+        with open(destination_path, 'wb') as file:
+            downloader = MediaIoBaseDownload(file, request)
+            done = False
+            while not done:
+                status, done = downloader.next_chunk()
+                print(f"Download {int(status.progress() * 100)}%.")
 
+        # Save metadata to the database
+        save_file_metadata(file_id, file_name, db_connection)
+
+        # Check the file paths
+        print(f"Downloaded {file_name} to {destination_path}")
+    else:
+        print(f"File ID {file_id} already exists in database. Skipping download.")
   
 
 # Function to read folder metadata
