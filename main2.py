@@ -161,9 +161,9 @@ async def send_message(message: Message, user_message: str, username: str, userI
     except Exception as e:
         print(f'Error: {e}')
         if is_private:
-            await message.author.send(f"An error occurred: {e}")
+            await message.author.send(f"An error occurred")
         else:
-            await message.channel.send(f"An error occurred: {e}")
+            await message.channel.send(f"An error occurred")
 
 # Handling the startup for the bot      
 @client.event
@@ -291,7 +291,7 @@ async def status(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)  # Defer the interaction to avoid timeouts
     # Count the number of users across all guilds (servers) the bot is in
     user_count = get_user_count(db_connection)
-    await interaction.followup.send(f"The bot is currently serving {user_count} users!", ephemeral=True)
+    await interaction.followup.send(f"The bot is currently serving {user_count} users.", ephemeral=True)
 
 # Start the bot
 def main() -> None:
