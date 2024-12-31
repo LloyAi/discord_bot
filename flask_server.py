@@ -1,4 +1,9 @@
 from flask import Flask, request, jsonify
+import asyncio
+from utils import process_files_and_get_response
+from db import connect_to_rds
+
+db_connection = connect_to_rds()
 
 bot_api = Flask(__name__)
 
@@ -10,9 +15,15 @@ def ask_discord_bot():
     data = request.get_json()
     user_message = data.get("message", "")
     username = data.get("username", "")
+    user_id = data.get("user_id", "")
 
     if not user_message:
         return jsonify({"error": "No message provided"}), 400
+
+    # Run the async function in the event loop
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    response = loop.run_until_complete(process_files_and_get_response(user_message, user_id, username, db_connection))
 
     # Simulate processing (replace this with real interaction logic)
     response = f"Hello, {username}! You said: {user_message}"

@@ -13,6 +13,7 @@ import json
 from Discord_Googledrive2 import user_folders, create_drive_service, get_all_files_in_folder, download_file, download_folder
 from db import *
 from done_command import process_and_store_context
+from utils import process_files_and_get_response
 
 db_connection = connect_to_rds()
 
@@ -70,61 +71,52 @@ async def send_message(message: Message, user_message: str, username: str, userI
             answer = getAiresponse(user_message[3:].strip(), userID, username, db_connection)
 
         elif user_message.startswith('.Ajna'):
-            print(user_message[5:].strip())
-            folder_id = "1lnTwkJc_t0dOh0ZfqVh47j6WEHVZzp_F"
-            service = create_drive_service()
+            answer = await process_files_and_get_response(user_message[5:].strip(), userID, username, db_connection)
+            # print(user_message[5:].strip())
+            # folder_id = "1lnTwkJc_t0dOh0ZfqVh47j6WEHVZzp_F"
+            # service = create_drive_service()
 
-            files = get_all_files_in_folder(service, folder_id)
-            print(files)
-            if not files:
-                print("No files found in the folder")
-                return
+            # files = get_all_files_in_folder(service, folder_id)
+            # print(files)
+            # if not files:
+            #     print("No files found in the folder")
+            #     return
 
-            destination_folder = "downloaded_files"
-            os.makedirs(destination_folder, exist_ok=True)
+            # destination_folder = "downloaded_files"
+            # os.makedirs(destination_folder, exist_ok=True)
 
-            for file in files:
-                file_id = file['id']
-                file_name = file['name']
-                mime_type = file['mimeType']
-                print('file',file)
-                if mime_type == 'application/vnd.google-apps.folder':
-                    items = get_all_files_in_folder(service, file_id)
-                    print('items',items)
-                    download_folder(service, file_id, file_name, destination_folder)
-                else:
-                    download_file(service, file_id, destination_folder, file_name)
-
-            # file_data = {file_name: open(os.path.join(destination_folder, file_name)).read() for file_name in os.listdir(destination_folder)}
-            file_data = {}
-            for root, _, files in os.walk(destination_folder):  # Walk through folders and files
-                for file_name in files:  # Only process files, not directories
-                    file_path = os.path.join(root, file_name)
-                    try:
-                        # Open and read the file with error handling for decoding issues
-                        with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
-                            file_data[file_name] = file.read()
-                    except Exception as e:
-                        print(f"Error reading file {file_name}: {e}")
-
-            for root, dirs, files in os.walk(destination_folder):
-                print(f"Current Directory: {root}")
-                print(f"Subdirectories: {dirs}")
-                print(f"Files: {files}")
+            # for file in files:
+            #     file_id = file['id']
+            #     file_name = file['name']
+            #     mime_type = file['mimeType']
+            #     print('file',file)
+            #     if mime_type == 'application/vnd.google-apps.folder':
+            #         items = get_all_files_in_folder(service, file_id)
+            #         print('items',items)
+            #         download_folder(service, file_id, file_name, destination_folder)
+            #     else:
+            #         download_file(service, file_id, destination_folder, file_name)
 
             # file_data = {}
-            # for file_name in os.listdir(destination_folder):
-            #     file_path = os.path.join(destination_folder, file_name)
-            #     try:
-            #         # Open and read the file with error handling for decoding issues
-            #         with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
-            #             file_data[file_name] = file.read()
-            #     except Exception as e:
-            #         print(f"Error reading file {file_name}: {e}")
-            await process_and_store_context(file_data, userID, db_connection)
+            # for root, _, files in os.walk(destination_folder):  # Walk through folders and files
+            #     for file_name in files:  # Only process files, not directories
+            #         file_path = os.path.join(root, file_name)
+            #         try:
+            #             # Open and read the file with error handling for decoding issues
+            #             with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
+            #                 file_data[file_name] = file.read()
+            #         except Exception as e:
+            #             print(f"Error reading file {file_name}: {e}")
 
-            print("Context processed and stored successfully!")
-            answer = getAiresponse(user_message[5:].strip(), userID, username, db_connection, is_saved=True)
+            # for root, dirs, files in os.walk(destination_folder):
+            #     print(f"Current Directory: {root}")
+            #     print(f"Subdirectories: {dirs}")
+            #     print(f"Files: {files}")
+                
+            # await process_and_store_context(file_data, userID, db_connection)
+
+            # print("Context processed and stored successfully!")
+            # answer = getAiresponse(user_message[5:].strip(), userID, username, db_connection, is_saved=True)
         else:
             convo_id = get_id(username)
            # response_json = get_docbot_response(user_message[4:].strip(), convo_id)
