@@ -109,13 +109,13 @@ def save_file_metadata(file_id, file_name, db_conn):
 def get_user_count(db_conn):
     try:
         with db_conn.cursor() as cur:
-            # Query to count the number of users from the user_history table
-            cur.execute("SELECT COUNT(*) FROM user_history")
-            user_count = cur.fetchone()[0]
-            print(f"Total number of users: {user_count}")
-            return user_count
+            # Query to count the number of unique users from the user_history table
+            cur.execute("SELECT COUNT(DISTINCT user_id) FROM user_history")
+            unique_user_count = cur.fetchone()[0]
+            print(f"Total number of unique users: {unique_user_count}")
+            return unique_user_count
     except Exception as e:
-        print(f"Error retrieving user count: {e}")
+        print(f"Error retrieving unique user count: {e}")
         return None
     
 # def test():
