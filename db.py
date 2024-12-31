@@ -110,7 +110,7 @@ def get_user_count(db_conn):
     try:
         with db_conn.cursor() as cur:
             # Query to count the number of unique users from the user_history table
-            cur.execute("SELECT COUNT(DISTINCT user_id) FROM user_history")
+            cur.execute("SELECT COUNT(DISTINCT user_name) FROM user_history")
             unique_user_count = cur.fetchone()[0]
             print(f"Total number of unique users: {unique_user_count}")
             return unique_user_count
