@@ -20,10 +20,10 @@ def ask_discord_bot():
     if not user_message:
         return jsonify({"error": "No message provided"}), 400
 
-    # Run the async function in the event loop
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    response = loop.run_until_complete(process_files_and_get_response(user_message, user_id, username, db_connection))
+    # # Run the async function in the event loop
+    # loop = asyncio.new_event_loop()
+    # asyncio.set_event_loop(loop)
+    # response = loop.run_until_complete(process_files_and_get_response(user_message, user_id, username, db_connection))
 
     # Simulate processing (replace this with real interaction logic)
     response = f"Hello, {username}! You said: {user_message}"
