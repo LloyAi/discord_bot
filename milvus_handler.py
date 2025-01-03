@@ -72,6 +72,8 @@ class MilvusHandler:
 
     def create_milvus_collection(self, User_id, dimension=1536):
         collection_name = self.get_collection_name(User_id)
+        self.create_connection()
+
         if not self.client.has_collection(collection_name=collection_name):
             # Create the collection with the dimension specified and no specific fields
             self.retry_operation(self.client.create_collection, 
@@ -83,6 +85,8 @@ class MilvusHandler:
 
     def insert_into_milvus(self, data, User_Id):
         collection_name = self.get_collection_name(User_Id)
+        self.create_connection()
+
         # Insert the embeddings as records directly into Milvus
         self.retry_operation(self.client.insert,
                              collection_name=collection_name,
@@ -91,6 +95,8 @@ class MilvusHandler:
 
     def query_milvus(self, query_embedding, User_id, limit=5):
         collection_name = self.get_collection_name(User_id)
+        self.create_connection()
+
         # Ensure the query_embedding is a list of floats
         if not isinstance(query_embedding, np.ndarray):
             query_embedding = np.array(query_embedding, dtype=float)
