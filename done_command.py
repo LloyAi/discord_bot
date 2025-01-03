@@ -6,10 +6,8 @@ import discord
 from discord import Intents, Client, Message, TextChannel
 from discord import app_commands
 from discord.ext import commands
-from milvus_handler import MilvusHandler
 
-
-milvus_handler = MilvusHandler("CodingAssistantMaster2.db")
+from main2 import milvus_handler as milvus_handler2
 
 # Solidity function parser
 def parse_solidity_functions(code):
@@ -60,7 +58,7 @@ def detect_and_parse_functions(code):
         return parse_java_functions(code)  # Assume Java if no 'function' keyword
 
 def process_and_insert_functions(file_data, interaction: discord.Interaction):
-    milvus_handler.create_milvus_collection(str(interaction.user.id), dimension=1536)  # Ensure collection is created or exists
+    milvus_handler2.create_milvus_collection(str(interaction.user.id), dimension=1536)  # Ensure collection is created or exists
     
     data = []
     id_counter = 0
@@ -87,20 +85,20 @@ def process_and_insert_functions(file_data, interaction: discord.Interaction):
 
     if data:
         print(f"Preparing to insert {len(data)} records into Milvus.")
-        milvus_handler.insert_into_milvus(data, str(interaction.user.id))  # Call synchronously
+        milvus_handler2.insert_into_milvus(data, str(interaction.user.id))  # Call synchronously
     else:
         print("No records to insert into Milvus.")
     
-async def getDownloadedFileFolder(folder_path, interaction: discord.Interaction):
+def getDownloadedFileFolder(folder_path, interaction: discord.Interaction):
         # Get the file content dictionary using getFilepath
     file_data = getFilepath(folder_path)
     
     # Process functions and insert them into Milvus
     process_and_insert_functions(file_data, interaction)
-    await interaction.followup.send("Success!! Your uploaded context is ready to use.", ephemeral=True)
+    interaction.followup.send("Success!! Your uploaded context is ready to use.", ephemeral=True)
 
 # Process files and insert their context into Milvus
-def process_and_store_context(file_data, user_id, db_conn):
+def process_and_store_context(file_data, user_id, db_conn, milvus_handler):
     milvus_handler.create_milvus_collection(str(user_id), dimension=1536)  # Create or ensure collection exists
     data = []
     id_counter = 0

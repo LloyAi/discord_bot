@@ -1,11 +1,8 @@
 import numpy as np
 from embedding_handler import get_openai_embedding, client as openai_client
 # from milvus_handler import query_milvus, client as milvus_client
-from milvus_handler import MilvusHandler
 
-milvus_handler = MilvusHandler("CodingAssistantMaster2.db")
-
-def getAiresponse(query_text, User_id, user_name, db_conn, is_saved=False):
+def getAiresponse(query_text, User_id, user_name, db_conn, milvus_handler, is_saved=False):
 
     def save_user_history(user_name, user_message, bot_response):
         print('Saving chat history in DB...')

@@ -14,6 +14,9 @@ from Discord_Googledrive2 import user_folders, create_drive_service, get_all_fil
 from db import *
 from done_command import process_and_store_context
 from utils import process_files_and_get_response
+from milvus_handler import MilvusHandler
+
+milvus_handler = MilvusHandler("CodingAssistantMaster2.db")
 
 db_connection = connect_to_rds()
 
@@ -71,7 +74,7 @@ async def send_message(message: Message, user_message: str, username: str, userI
             answer = getAiresponse(user_message[3:].strip(), userID, username, db_connection)
 
         elif user_message.startswith('.Ajna'):
-            answer = process_files_and_get_response(user_message[5:].strip(), userID, username, db_connection)
+            answer = process_files_and_get_response(user_message[5:].strip(), userID, username, db_connection, milvus_handler)
             # print(user_message[5:].strip())
             # folder_id = "1lnTwkJc_t0dOh0ZfqVh47j6WEHVZzp_F"
             # service = create_drive_service()

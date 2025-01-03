@@ -3,7 +3,7 @@ from Discord_Googledrive2 import create_drive_service, get_all_files_in_folder, 
 from ai_command import getAiresponse
 from done_command import process_and_store_context
 
-def process_files_and_get_response(user_message, userID, username, db_connection):
+def process_files_and_get_response(user_message, userID, username, db_connection, milvus_handler):
     """
     Function to process files in Google Drive, extract context, and return AI response.
     """
@@ -37,7 +37,7 @@ def process_files_and_get_response(user_message, userID, username, db_connection
             except Exception as e:
                 print(f"Error reading file {file_name}: {e}")
 
-    process_and_store_context(file_data, userID, db_connection)
+    process_and_store_context(file_data, userID, db_connection, milvus_handler)
 
-    answer = getAiresponse(user_message, userID, username, db_connection, is_saved=True)
+    answer = getAiresponse(user_message, userID, username, db_connection, milvus_handler, is_saved=True)
     return answer
