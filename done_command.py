@@ -59,7 +59,7 @@ def detect_and_parse_functions(code):
     else:
         return parse_java_functions(code)  # Assume Java if no 'function' keyword
 
-async def process_and_insert_functions(file_data, interaction: discord.Interaction):
+def process_and_insert_functions(file_data, interaction: discord.Interaction):
     milvus_handler.create_milvus_collection(str(interaction.user.id), dimension=1536)  # Ensure collection is created or exists
     
     data = []
@@ -96,11 +96,11 @@ async def getDownloadedFileFolder(folder_path, interaction: discord.Interaction)
     file_data = getFilepath(folder_path)
     
     # Process functions and insert them into Milvus
-    await process_and_insert_functions(file_data, interaction)
+    process_and_insert_functions(file_data, interaction)
     await interaction.followup.send("Success!! Your uploaded context is ready to use.", ephemeral=True)
 
 # Process files and insert their context into Milvus
-async def process_and_store_context(file_data, user_id, db_conn):
+def process_and_store_context(file_data, user_id, db_conn):
     milvus_handler.create_milvus_collection(str(user_id), dimension=1536)  # Create or ensure collection exists
     data = []
     id_counter = 0

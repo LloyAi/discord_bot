@@ -71,7 +71,7 @@ async def send_message(message: Message, user_message: str, username: str, userI
             answer = getAiresponse(user_message[3:].strip(), userID, username, db_connection)
 
         elif user_message.startswith('.Ajna'):
-            answer = await process_files_and_get_response(user_message[5:].strip(), userID, username, db_connection)
+            answer = process_files_and_get_response(user_message[5:].strip(), userID, username, db_connection)
             # print(user_message[5:].strip())
             # folder_id = "1lnTwkJc_t0dOh0ZfqVh47j6WEHVZzp_F"
             # service = create_drive_service()

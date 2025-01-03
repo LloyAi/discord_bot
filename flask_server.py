@@ -7,7 +7,7 @@ db_connection = connect_to_rds()
 bot_api = Flask(__name__)
 
 @bot_api.route("/ask", methods=["POST"])
-async def ask_discord_bot():
+def ask_discord_bot():
     """
     API endpoint to interact with the Discord bot.
     """
@@ -20,7 +20,7 @@ async def ask_discord_bot():
         return jsonify({"error": "No message provided"}), 400
 
     # process_files_and_get_response(user_message, user_id, username, db_connection)
-    response = await process_files_and_get_response(user_message, user_id, username, db_connection)                               
+    response = process_files_and_get_response(user_message, user_id, username, db_connection)                               
     # # Run the async function in the event loop
     # loop = asyncio.new_event_loop()
     # asyncio.set_event_loop(loop)
