@@ -1,11 +1,15 @@
 import re
 from file_reader_handler import getFilepath
 from embedding_handler import get_openai_embedding
-from milvus_handler import create_milvus_collection, insert_into_milvus
+# from milvus_handler import create_milvus_collection, insert_into_milvus
 import discord
 from discord import Intents, Client, Message, TextChannel
 from discord import app_commands
 from discord.ext import commands
+from milvus_handler import MilvusHandler
+
+
+milvus_handler = MilvusHandler("CodingAssistantMaster2.db")
 
 # Solidity function parser
 def parse_solidity_functions(code):
@@ -56,7 +60,7 @@ def detect_and_parse_functions(code):
         return parse_java_functions(code)  # Assume Java if no 'function' keyword
 
 async def process_and_insert_functions(file_data, interaction: discord.Interaction):
-    create_milvus_collection(str(interaction.user.id), dimension=1536)  # Ensure collection is created or exists
+    milvus_handler.create_milvus_collection(str(interaction.user.id), dimension=1536)  # Ensure collection is created or exists
     
     data = []
     id_counter = 0
@@ -83,7 +87,7 @@ async def process_and_insert_functions(file_data, interaction: discord.Interacti
 
     if data:
         print(f"Preparing to insert {len(data)} records into Milvus.")
-        insert_into_milvus(data, str(interaction.user.id))  # Call synchronously
+        milvus_handler.insert_into_milvus(data, str(interaction.user.id))  # Call synchronously
     else:
         print("No records to insert into Milvus.")
     
@@ -97,7 +101,7 @@ async def getDownloadedFileFolder(folder_path, interaction: discord.Interaction)
 
 # Process files and insert their context into Milvus
 async def process_and_store_context(file_data, user_id, db_conn):
-    create_milvus_collection(str(user_id), dimension=1536)  # Create or ensure collection exists
+    milvus_handler.create_milvus_collection(str(user_id), dimension=1536)  # Create or ensure collection exists
     data = []
     id_counter = 0
 
@@ -115,7 +119,7 @@ async def process_and_store_context(file_data, user_id, db_conn):
                 id_counter += 1
 
     if data:
-        insert_into_milvus(data, str(user_id))
+        milvus_handler.insert_into_milvus(data, str(user_id))
         print(f"Inserted {len(data)} records into Milvus for user {user_id}.")
 
 if __name__ == "__main__":
