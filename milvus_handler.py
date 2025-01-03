@@ -33,12 +33,14 @@ class MilvusHandler:
         return f"_{user_id}"
 
     def create_connection(self):
+        print('self.client',self.client)
         retries = 5
         wait_time = 2  # Start with 2 seconds
         for _ in range(retries):
             try:
                 # If the client is already created, no need to reinitialize
                 if self.client is None:
+                    print('new connection created')
                     self.client = MilvusClient(self.db_file)
                 return self.client
             except exceptions.ConnectionConfigException as e:
@@ -100,7 +102,7 @@ class MilvusHandler:
             query_embedding = query_embedding.astype(float)
 
         query_embedding = query_embedding.tolist()
-        
+
         if not self.client.has_collection(collection_name=collection_name):
             self.create_milvus_collection(User_id, dimension=1536)
         
