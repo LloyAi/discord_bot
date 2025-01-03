@@ -7,7 +7,6 @@ from discord import Intents, Client, Message, TextChannel
 from discord import app_commands
 from discord.ext import commands
 
-from main2 import milvus_handler as milvus_handler2
 
 # Solidity function parser
 def parse_solidity_functions(code):
@@ -58,6 +57,7 @@ def detect_and_parse_functions(code):
         return parse_java_functions(code)  # Assume Java if no 'function' keyword
 
 def process_and_insert_functions(file_data, interaction: discord.Interaction):
+    from main2 import milvus_handler as milvus_handler2
     milvus_handler2.create_milvus_collection(str(interaction.user.id), dimension=1536)  # Ensure collection is created or exists
     
     data = []
