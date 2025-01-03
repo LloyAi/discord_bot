@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from utils import process_files_and_get_response
 from db import *
+from main2 import milvus_handler
 
 db_connection = connect_to_rds()
 
@@ -20,7 +21,7 @@ def ask_discord_bot():
         return jsonify({"error": "No message provided"}), 400
 
     # process_files_and_get_response(user_message, user_id, username, db_connection)
-    response = process_files_and_get_response(user_message, user_id, username, db_connection)                               
+    response = process_files_and_get_response(user_message, user_id, username, db_connection, milvus_handler)                               
     # # Run the async function in the event loop
     # loop = asyncio.new_event_loop()
     # asyncio.set_event_loop(loop)
