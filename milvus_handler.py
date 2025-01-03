@@ -8,9 +8,6 @@ import threading
 # client = MilvusClient("CodingAssistantMaster2.db")
 # collection_name = "Faiss_App3"
 
-def get_collection_name(user_id):
-    """Helper function to get collection name from user ID."""
-    return f"_{user_id}"
 
 # def retry_operation(func, *args, retries=3, wait_time=2, **kwargs):
 #     """Function to retry an operation with specified retries and wait time."""
@@ -30,6 +27,10 @@ class MilvusHandler:
         self.db_file = db_file
         self.client = None
         self.lock = threading.Lock()  # Ensures thread-safe access to the client
+
+    def get_collection_name(self, user_id):
+        """Helper function to get collection name from user ID."""
+        return f"_{user_id}"
 
     def create_connection(self):
         retries = 5
