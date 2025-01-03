@@ -45,6 +45,8 @@ def getAiresponse(query_text, User_id, user_name, db_conn, is_saved=False):
         # Query Milvus for relevant context
         query_result, passes_threshold = milvus_handler.query_milvus(np.array([query_embedding]), User_id, limit=5)
         print("We found context")
+        
+        milvus_handler.close_connection()
 
         # Collect all matching functions' full text if any
         function_contexts = []

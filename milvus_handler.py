@@ -49,20 +49,16 @@ class MilvusHandler:
         raise Exception(f"Failed to connect to Milvus after {retries} retries.")
 
     def retry_operation(self, operation_func, *args, **kwargs):
-        """
-        Retry logic for any operation involving the Milvus client.
-        The lock is only applied during the critical function execution.
-        """
         retries = 5
         wait_time = 2  # Start with 2 seconds
         for _ in range(retries):
             try:
-                # Ensure the client is connected before executing the operation
-                self.create_connection()
+                if self.client is None:
+                    self.create_connection()
 
-                with self.lock:  # Lock the database only for the operation
+                # Ensure thread-safe access to the Milvus client
+                with self.lock:
                     return operation_func(*args, **kwargs)
-
             except exceptions.ConnectionConfigException as e:
                 print(f"Error: {e}")
                 print(f"Retrying in {wait_time} seconds...")
@@ -124,7 +120,13 @@ class MilvusHandler:
                 passes_threshold = False
                 break
         return search_res, passes_threshold
-    
+
+    def close_connection(self):
+        if self.client:
+            # Close the connection explicitly
+            self.client.close()
+            self.client = None
+            print("Milvus connection closed.")
 # def create_milvus_collection(User_id, dimension=1536):
     
 #     collection_name = get_collection_name(User_id)
