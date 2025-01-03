@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from utils import process_files_and_get_response
-from db import *
+from db import connect_to_rds
 from main2 import milvus_handler
 
 db_connection = connect_to_rds()
