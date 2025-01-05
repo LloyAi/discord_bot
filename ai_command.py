@@ -2,7 +2,7 @@ import numpy as np
 from embedding_handler import get_openai_embedding, client as openai_client
 from milvus_handler import query_milvus, client as milvus_client
 
-def getAiresponse(query_text, User_id, user_name, db_conn, is_saved=False):
+def getAiresponse(query_text, User_id, user_name, db_conn, use_theoriq_db, is_saved=False):
 
     def save_user_history(user_name, user_message, bot_response):
         print('Saving chat history in DB...')
@@ -40,7 +40,7 @@ def getAiresponse(query_text, User_id, user_name, db_conn, is_saved=False):
 
     if query_embedding is not None:
         # Query Milvus for relevant context
-        query_result, passes_threshold = query_milvus(np.array([query_embedding]), User_id, limit=5)
+        query_result, passes_threshold = query_milvus(np.array([query_embedding]), User_id, limit=5, use_theoriq_db=use_theoriq_db)
         print("We found context")
 
         # Collect all matching functions' full text if any

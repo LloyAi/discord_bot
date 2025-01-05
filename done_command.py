@@ -96,8 +96,8 @@ async def getDownloadedFileFolder(folder_path, interaction: discord.Interaction)
     await interaction.followup.send("Success!! Your uploaded context is ready to use.", ephemeral=True)
 
 # Process files and insert their context into Milvus
-async def process_and_store_context(file_data, user_id, db_conn):
-    create_milvus_collection(str(user_id), dimension=1536)  # Create or ensure collection exists
+async def process_and_store_context(file_data, user_id, db_conn, use_theoriq_db):
+    create_milvus_collection(str(user_id), dimension=1536, use_theoriq_db=use_theoriq_db)  # Create or ensure collection exists
     data = []
     id_counter = 0
 
@@ -115,7 +115,7 @@ async def process_and_store_context(file_data, user_id, db_conn):
                 id_counter += 1
 
     if data:
-        insert_into_milvus(data, str(user_id))
+        insert_into_milvus(data, str(user_id), use_theoriq_db=use_theoriq_db)
         print(f"Inserted {len(data)} records into Milvus for user {user_id}.")
 
 if __name__ == "__main__":

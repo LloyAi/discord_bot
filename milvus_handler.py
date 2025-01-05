@@ -3,15 +3,18 @@ import numpy as np
 import json
 
 # Initialize Milvus Client
-client = MilvusClient("CodingAssistantMaster2.db")
+discord_client = MilvusClient("CodingAssistantMaster2.db")
 # collection_name = "Faiss_App3"
+
+# Initialize the new Milvus client for the separate usage
+theoriq_client = MilvusClient("Theoriq.db")
 
 def get_collection_name(user_id):
     """Helper function to get collection name from user ID."""
     return f"_{user_id}"
 
-def create_milvus_collection(User_id, dimension=1536):
-    
+def create_milvus_collection(User_id, dimension=1536, use_theoriq_db=False):
+    client = theoriq_client if use_theoriq_db else discord_client
     collection_name = get_collection_name(User_id)
     if not client.has_collection(collection_name=collection_name):
         # Create the collection with the dimension specified and no specific fields
@@ -23,8 +26,8 @@ def create_milvus_collection(User_id, dimension=1536):
     else:
         print("collection name: " +  User_id)
 
-def insert_into_milvus(data, User_Id):
-
+def insert_into_milvus(data, User_Id, use_theoriq_db=False):
+    client = theoriq_client if use_theoriq_db else discord_client
     collection_name = get_collection_name(User_Id)
     # Insert the embeddings as records directly into Milvus
     client.insert(
@@ -34,7 +37,8 @@ def insert_into_milvus(data, User_Id):
     # After insertion, print the number of entities in the collection
     print(f"Inserted {len(data)} records into the collection '{collection_name}'.")
 
-def query_milvus(query_embedding, User_id, limit=5):
+def query_milvus(query_embedding, User_id, limit=5, use_theoriq_db=False):
+    client = theoriq_client if use_theoriq_db else discord_client
     collection_name = get_collection_name(User_id)
     # Ensure the query_embedding is a list of floats
     if not isinstance(query_embedding, np.ndarray):
@@ -45,7 +49,7 @@ def query_milvus(query_embedding, User_id, limit=5):
     # Wrap the embedding in a list if it's not already
     query_embedding = query_embedding.tolist()
     if not client.has_collection(collection_name=collection_name):
-        create_milvus_collection(User_id, dimension=1536)
+        create_milvus_collection(User_id, dimension=1536, use_theoriq_db=use_theoriq_db)
     
     search_res = client.search(
         collection_name=collection_name,

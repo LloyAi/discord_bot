@@ -68,7 +68,7 @@ async def send_message(message: Message, user_message: str, username: str, userI
     try:
         if user_message.startswith('.AI'):
             #answer = get_response(user_message[3:].strip())
-            answer = getAiresponse(user_message[3:].strip(), userID, username, db_connection)
+            answer = getAiresponse(user_message[3:].strip(), userID, username, db_connection, False)
 
         elif user_message.startswith('.Ajna'):
             answer = await process_files_and_get_response(user_message[5:].strip(), userID, username, db_connection)
