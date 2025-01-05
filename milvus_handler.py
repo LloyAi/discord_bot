@@ -6,15 +6,20 @@ import json
 discord_client = MilvusClient("CodingAssistantMaster2.db")
 # collection_name = "Faiss_App3"
 
-# Initialize the new Milvus client for the separate usage
-theoriq_client = MilvusClient("Theoriq.db")
 
 def get_collection_name(user_id):
     """Helper function to get collection name from user ID."""
     return f"_{user_id}"
 
 def create_milvus_collection(User_id, dimension=1536, use_theoriq_db=False):
-    client = theoriq_client if use_theoriq_db else discord_client
+    # Initialize the appropriate Milvus client based on the condition
+    if use_theoriq_db:
+        theoriq_client = MilvusClient("Theoriq.db")
+        client = theoriq_client
+    else:
+        discord_client = MilvusClient("CodingAssistantMaster2.db")
+        client = discord_client
+
     collection_name = get_collection_name(User_id)
     if not client.has_collection(collection_name=collection_name):
         # Create the collection with the dimension specified and no specific fields
@@ -25,9 +30,19 @@ def create_milvus_collection(User_id, dimension=1536, use_theoriq_db=False):
         print ("just created collection: " + collection_name)
     else:
         print("collection name: " +  User_id)
+    
+    # Close the client at the end
+    client.close()
 
 def insert_into_milvus(data, User_Id, use_theoriq_db=False):
-    client = theoriq_client if use_theoriq_db else discord_client
+    # Initialize the appropriate Milvus client based on the condition
+    if use_theoriq_db:
+        theoriq_client = MilvusClient("Theoriq.db")
+        client = theoriq_client
+    else:
+        discord_client = MilvusClient("CodingAssistantMaster2.db")
+        client = discord_client
+
     collection_name = get_collection_name(User_Id)
     # Insert the embeddings as records directly into Milvus
     client.insert(
@@ -37,8 +52,18 @@ def insert_into_milvus(data, User_Id, use_theoriq_db=False):
     # After insertion, print the number of entities in the collection
     print(f"Inserted {len(data)} records into the collection '{collection_name}'.")
 
+    # Close the client at the end
+    client.close()
+
 def query_milvus(query_embedding, User_id, limit=5, use_theoriq_db=False):
-    client = theoriq_client if use_theoriq_db else discord_client
+    # Initialize the appropriate Milvus client based on the condition
+    if use_theoriq_db:
+        theoriq_client = MilvusClient("Theoriq.db")
+        client = theoriq_client
+    else:
+        discord_client = MilvusClient("CodingAssistantMaster2.db")
+        client = discord_client
+
     collection_name = get_collection_name(User_id)
     # Ensure the query_embedding is a list of floats
     if not isinstance(query_embedding, np.ndarray):
@@ -67,4 +92,8 @@ def query_milvus(query_embedding, User_id, limit=5, use_theoriq_db=False):
         if data.get('distance') > threshold_dist:
             passes_threshold = False
             break
+
+    # Close the client at the end
+    client.close()
+
     return search_res, passes_threshold
