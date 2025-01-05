@@ -7,7 +7,7 @@ from db import connect_to_rds
 bot_api = Flask(__name__)
 
 @bot_api.route("/ask", methods=["POST"])
-def ask_discord_bot():
+async def ask_discord_bot():
     """
     API endpoint to interact with the Discord bot.
     """
@@ -22,7 +22,7 @@ def ask_discord_bot():
     # process_files_and_get_response(user_message, user_id, username, db_connection)
     use_theoriq_db = True
     db_connection = connect_to_rds()
-    response = process_files_and_get_response(user_message, user_id, username, db_connection, use_theoriq_db)                               
+    response = await process_files_and_get_response(user_message, user_id, username, db_connection, use_theoriq_db)                               
     # # Run the async function in the event loop
     # loop = asyncio.new_event_loop()
     # asyncio.set_event_loop(loop)
