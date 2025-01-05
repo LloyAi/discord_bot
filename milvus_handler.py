@@ -3,7 +3,7 @@ import numpy as np
 import json
 
 # Initialize Milvus Client
-discord_client = MilvusClient("CodingAssistantMaster2.db")
+# discord_client = MilvusClient("CodingAssistantMaster2.db")
 # collection_name = "Faiss_App3"
 
 
