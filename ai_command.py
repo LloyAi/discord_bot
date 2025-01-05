@@ -1,6 +1,6 @@
 import numpy as np
 from embedding_handler import get_openai_embedding, client as openai_client
-from milvus_handler import query_milvus, client as milvus_client
+from milvus_handler import query_milvus
 
 def getAiresponse(query_text, User_id, user_name, db_conn, use_theoriq_db, is_saved=False):
 
