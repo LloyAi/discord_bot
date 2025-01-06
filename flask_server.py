@@ -12,6 +12,7 @@ async def ask_discord_bot():
     API endpoint to interact with the Discord bot.
     """
     data = request.get_json()
+    print(f"request recieved: {data}")
     user_message = data.get("message", "")
     username = data.get("username", "")
     user_id = data.get("user_id", "")
