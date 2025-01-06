@@ -27,13 +27,13 @@ def getAiresponse(query_text, User_id, user_name, db_conn, use_theoriq_db, is_sa
     
     # Fetch user history and format it
     history_context = ""
-    if is_saved:
-        chat_history = fetch_user_history(user_name)
-        print('chat_history', chat_history)
-        if chat_history:
-            history_context = "\n".join(
-                f"User: {msg}\nAssistant: {resp}" for msg, resp in reversed(chat_history)
-            )
+    # if is_saved:
+    #     chat_history = fetch_user_history(user_name)
+    #     print('chat_history', chat_history)
+    #     if chat_history:
+    #         history_context = "\n".join(
+    #             f"User: {msg}\nAssistant: {resp}" for msg, resp in reversed(chat_history)
+    #         )
 
     # Get the embedding for the query text
     query_embedding = get_openai_embedding(query_text)
@@ -56,7 +56,7 @@ def getAiresponse(query_text, User_id, user_name, db_conn, use_theoriq_db, is_sa
         messages = [
             {"role": "system", "content": "You are a helpful assistant."},
         ]
-        if history_context:
+        if history_context!='':
             messages.append({"role": "user", "content": f"Here is our conversation history:\n{history_context}"})
         
         if full_context != "No relevant data found in the Milvus collection.":
@@ -81,7 +81,7 @@ def getAiresponse(query_text, User_id, user_name, db_conn, use_theoriq_db, is_sa
     else:
         print("Query text exceeds token limit.")
 
-    if is_saved and generated_response != "Sorry, I could not find any relevant information to respond to your query.":
-        save_user_history(user_name, query_text, generated_response)
+    # if is_saved and generated_response != "Sorry, I could not find any relevant information to respond to your query.":
+    #     save_user_history(user_name, query_text, generated_response)
     
     return generated_response
