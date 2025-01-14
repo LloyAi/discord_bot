@@ -188,11 +188,11 @@ async def on_message(message: Message) -> None:
         
         await send_message(message, user_message, username, user_id)
 
-    elif message.attachments and not message.author.bot:
-        # Handle file upload and send the file URL back to the user
-        attachment = message.attachments[0]
-        file_url = attachment.url
-        await message.channel.send(f'File uploaded successfully! You can access it here: {file_url}')
+    # elif message.attachments and not message.author.bot:
+    #     # Handle file upload and send the file URL back to the user
+    #     attachment = message.attachments[0]
+    #     file_url = attachment.url
+    #     await message.channel.send(f'File uploaded successfully! You can access it here: {file_url}')
 
     # Ensuring the bot processes commands even after an on_message event
     await client.process_commands(message)
